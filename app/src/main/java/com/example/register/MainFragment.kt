@@ -7,12 +7,11 @@ import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.*
 import com.example.register.databinding.FragmentMainBinding
 
 class MainFragment : Fragment(R.layout.fragment_main) {
-    val registerViewModel: RegisterView by viewModels()
+    private val registerViewModel: RegisterView by activityViewModels()
 
     @SuppressLint("CommitPrefEdits")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -23,8 +22,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
         FragmentMainBinding.bind(view).apply {
             registerView = registerViewModel
             lifecycleOwner = this@MainFragment
-            val textViewsInfo =
-                listOf(fullNameInfo, usernameInfo, emailInfo, passwordInfo, genderInfo)
+//            val textViewsInfo =
+//                listOf(fullNameInfo, usernameInfo, emailInfo, passwordInfo, genderInfo)
             val textViews = listOf(fullName, username, email, password)
             btnRegister.setOnClickListener {
                 registerViewModel.fullName.value = fullName.text.toString()
@@ -46,7 +45,10 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             }
             btnShowInfo.setOnClickListener {
                 if (registerViewModel.checking()) {
-                    info.isVisible = true
+                    parentFragmentManager.commit {
+                        setReorderingAllowed(true)
+                        replace<InfoFragment>(R.id.fragment_container_view)
+                    }
                 }else{
                     Toast.makeText(requireContext(),"Your info is wrong",Toast.LENGTH_SHORT).show()
                 }
@@ -55,9 +57,6 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 //                    val text = textView.text.toString()
 //                    textView.text = dataSave.getString(tag, text)
 //                }
-            }
-            btnHideInfo.setOnClickListener {
-                info.isVisible = false
             }
         }
     }
